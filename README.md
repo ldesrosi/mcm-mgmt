@@ -12,6 +12,26 @@ The high-level steps are:
 4. Deploy cert-manager and iam-controller as a managed application on MCM Hub Cluster.  
 5. Patch the ClusterRole to ensure cert-manager has the required access.  
 
+## Adjusting the scripts  
+  
+At the moment you will need to manually adjust a few files before proceeding.
+
+1. Creating the base 64 dockerconfigjson
+   First run this command 
+   ```
+   oc create secret docker-registry mcm-dockercfg --docker-server=<<OCP IMAGE REGISTRY URL>>  --docker-username=$(oc whoami) --docker-password=$(oc whoami -t)
+   oc get secret mcm-dockercfg -o yaml
+   oc delete secret mcm-dockercfg
+   ```
+   from the output of the second command, copy the value of the field `.dockerconfigjson` to the `00-policies/mcm-managed-base-policy.yaml`. Note that we delete the secret as you don't need to keep it since it will be recreated by the policies.
+  
+2.  Modifying 03-apps/00-channel.yaml
+    You will need to replace the `<<ICP CONSOLE URL>>` with the value of your ICP URL and then you will need to base64 encode your CP4MCM UserId and Password and replace the tokens `<<SOME BASE64 USER>>` and `<<SOME BASE64 PASSWORD>>`
+
+3. Modifying subscription files `02-cert-subscription.yaml` and `03-iam-subscription.yaml`
+    You will need to modify `<<YOUR IMAGE REGISTRY>>` with your OCP image registry route, omitting the `https://`.
+
+
 ## Commands to run
 
 1. Setup Policies  
