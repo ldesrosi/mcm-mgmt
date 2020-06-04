@@ -64,6 +64,7 @@ spec:
         - persistentVolumeClaim
         - projected
         - secret
+  role-template:
     - complianceType: musthave
       objectDefinition:
         apiVersion: rbac.authorization.k8s.io/v1
@@ -102,6 +103,7 @@ spec:
           - watch
     - complianceType: musthave
       objectDefinition:
+        apiVersion: rbac.authorization.k8s.io/v1
         kind: ClusterRoleBinding
         metadata:
           name: cert-manager-cert-policy-access
@@ -115,9 +117,10 @@ spec:
           namespace: mcm-cert-manager
     - complianceType: musthave
       objectDefinition:
+        apiVersion: rbac.authorization.k8s.io/v1
         kind: ClusterRoleBinding
         metadata:
-          name: cert-manager-cert-policy-access
+          name: iam-ctrl-policy-access
         roleRef:
           apiGroup: rbac.authorization.k8s.io
           kind: ClusterRole
