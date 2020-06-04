@@ -1,0 +1,32 @@
+# Create a Namespace to hold the Channel
+apiVersion: app.ibm.com/v1alpha1
+kind: Channel
+metadata:
+  name: mcm-mgmt-channel
+  namespace: mcm-mgmt-channel
+spec:  
+    type: HelmRepo
+    secretRef:
+      name: helm-repo-secret
+      namespace: mcm-cert-manager
+    configRef:
+      name: insecure-skip-verify
+      namespace: mcm-cert-manager
+    pathname: https://icp-console.mcm-cluster-701608-3a99165d2acc3a9ca65ba8c534430045-0000.us-south.containers.appdomain.cloud:443/mgmt-repo/charts  
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: insecure-skip-verify
+  namespace: mcm-mgmt-channel
+data:
+  insecureSkipVerify: "true"
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: helm-repo-secret
+  namespace: mcm-mgmt-channel
+data:
+  user: "YWRtaW4K"
+  password: "QVZlcnlMMG5nUGFzc3cwcmRPZlRoaXJ0eVR3b0NoYXJhY3RlcnMK"

@@ -1,0 +1,13 @@
+apiVersion: app.ibm.com/v1alpha1
+kind: PlacementRule
+metadata:
+  name: mcm-mgmt-placement-rule
+  namespace: mcm-mgmt-app
+  labels:
+    name: mcm-mgmt-placement-rule
+    app: mcm-mgmt-app
+spec:
+  clusterReplicas: 1
+  clusterLabels:
+    matchExpressions:
+      - {key: managed-cluster, operator: In, values: ["true"]}

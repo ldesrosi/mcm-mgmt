@@ -1,0 +1,50 @@
+apiVersion: app.ibm.com/v1alpha1
+kind: Subscription
+metadata:
+  name: cert-manager-sub
+  namespace: mcm-mgmt-app
+  labels:
+    name: cert-manager-sub
+    app: cert-manager-app
+spec:
+  channel: mcm-mgmt-channel/mcm-mgmt-channel
+  name: ibm-cert-manager
+  packageFilter:
+    version: 3.4.1
+  packageOverrides:
+  - packageName: ibm-cert-manager
+    packageOverrides:
+    - path: spec.values
+      value: |
+        image:
+          repository: default-route-openshift-image-registry.mcm-cluster-701608-3a99165d2acc3a9ca65ba8c534430045-0000.us-south.containers.appdomain.cloud/ibmcom/icp-cert-manager-controller
+        controller:
+          image:
+            repository: default-route-openshift-image-registry.mcm-cluster-701608-3a99165d2acc3a9ca65ba8c534430045-0000.us-south.containers.appdomain.cloud/ibmcom/icp-cert-policy-controller
+  placement:
+     placementRef:
+      name: mcm-mgmt-placement-rule
+      kind: PlacementRule
+      group: app.ibm.com
+  overrides:
+    - clusterName: "/"
+      clusterOverrides:
+      - path: "metadata.namespace"
+        value: mcm-cert-manager
+---
+apiVersion: app.k8s.io/v1beta1
+kind: Application
+metadata:
+ name: cert-manager-app
+ namespace: mcm-mgmt-app
+ labels:
+  name: cert-manager-app
+  app: cert-manager-app
+spec:
+ componentKinds:
+ - group: app.ibm.com/v1alpha1
+   kind: Subscription
+ selector:
+  matchLabels:
+   app: cert-manager-app
+

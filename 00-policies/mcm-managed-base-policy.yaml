@@ -1,0 +1,110 @@
+apiVersion: policy.mcm.ibm.com/v1alpha1
+kind: Policy
+metadata:
+  name: mcm-components-must-be-deployed
+  namespace: kube-system
+  annotations:
+    policy.mcm.ibm.com/standards: NIST-CSF
+    policy.mcm.ibm.com/categories: PR.IP Information Protection Processes and Procedures
+    policy.mcm.ibm.com/controls: PR.IP-1 Baseline configuration
+spec:
+  complianceType: musthave
+  remediationAction: enforce
+  disabled: false
+  namespaces:
+    exclude: ["kube-*"]
+    include: ["default"]
+  object-templates:
+    - complianceType: musthave
+      objectDefinition:
+        kind: Namespace 
+        apiVersion: v1
+        metadata:
+          name: mcm-cert-manager
+        labels:
+          certmanager.k8s.io/disable-validation: "true"
+    - complianceType: musthave
+      objectDefinition:
+        kind: Secret 
+        apiVersion: v1
+        metadata:
+          name: mcm-dockercfg
+          namespace: mcm-cert-manager
+        data:
+          .dockerconfigjson: <<<< INSERT BASE64 PAYLOAD HERE >>>>>
+        type: kubernetes.io/dockerconfigjson
+    - complianceType: musthave
+      objectDefinition:
+        kind: Secret 
+        apiVersion: v1
+        metadata:
+          name: mcm-dockercfg
+          namespace: kube-system
+        data:
+          .dockerconfigjson: <<<< INSERT BASE64 PAYLOAD HERE >>>>>
+        type: kubernetes.io/dockerconfigjson
+    - complianceType: musthave
+      objectDefinition:
+        kind: SecurityContextConstraints
+        apiVersion: security.openshift.io/v1
+        metadata:
+          name: icp-scc
+        allowHostDirVolumePlugin: true
+        allowHostIPC: false
+        allowHostNetwork: true
+        allowHostPID: true
+        allowHostPorts: true
+        allowPrivilegeEscalation: true
+        allowPrivilegedContainer: false
+        allowedCapabilities: null
+        defaultAddCapabilities: null
+        fsGroup:
+          type: RunAsAny
+        groups: []
+        priority: 1
+        readOnlyRootFilesystem: false
+        requiredDropCapabilities:
+        - MKNOD
+        runAsUser:
+          type: RunAsAny
+        seLinuxContext:
+          type: MustRunAs
+        seccompProfiles:
+        - '*'
+        supplementalGroups:
+          type: RunAsAny
+        users:
+        - system:serviceaccount:mcm-cert-manager:default
+        volumes:
+        - configMap
+        - downwardAPI
+        - emptyDir
+        - hostPath
+        - nfs
+        - persistentVolumeClaim
+        - projected
+        - secret
+---
+apiVersion: mcm.ibm.com/v1alpha1
+kind: PlacementBinding
+metadata:
+  name: binding-mcm-components-must-be-deployed
+  namespace: kube-system
+placementRef:
+  name: placement-mcm-components-must-be-deployed
+  kind: PlacementPolicy
+  apiGroup: mcm.ibm.com
+subjects:
+- name: mcm-components-must-be-deployed
+  kind: Policy
+  apiGroup: policy.mcm.ibm.com
+---
+apiVersion: mcm.ibm.com/v1alpha1
+kind: PlacementPolicy
+metadata:
+  name: placement-mcm-components-must-be-deployed
+  namespace: kube-system
+spec:
+  clusterLabels:
+    matchExpressions:
+      - {key: managed-cluster, operator: In, values: ["true"]}

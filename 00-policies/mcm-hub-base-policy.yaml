@@ -1,0 +1,53 @@
+apiVersion: policy.mcm.ibm.com/v1alpha1
+kind: Policy
+metadata:
+  name: mcm-hub-components-must-be-deployed
+  namespace: kube-system
+  annotations:
+    policy.mcm.ibm.com/standards: NIST-CSF
+    policy.mcm.ibm.com/categories: PR.IP Information Protection Processes and Procedures
+    policy.mcm.ibm.com/controls: PR.IP-1 Baseline configuration
+spec:
+  complianceType: musthave
+  remediationAction: enforce
+  disabled: false
+  namespaces:
+    exclude: ["kube-*"]
+    include: ["default"]
+  object-templates:
+    - complianceType: musthave
+      objectDefinition:
+        kind: Namespace 
+        apiVersion: v1
+        metadata:
+          name: mcm-mgmt-channel
+    - complianceType: musthave
+      objectDefinition:
+        kind: Namespace 
+        apiVersion: v1
+        metadata:
+          name: mcm-mgmt-app
+---
+apiVersion: mcm.ibm.com/v1alpha1
+kind: PlacementBinding
+metadata:
+  name: binding-mcm-hub-components-must-be-deployed
+  namespace: kube-system
+placementRef:
+  name: placement-mcm-hub-components-must-be-deployed
+  kind: PlacementPolicy
+  apiGroup: mcm.ibm.com
+subjects:
+- name: mcm-hub-components-must-be-deployed
+  kind: Policy
+  apiGroup: policy.mcm.ibm.com
+---
+apiVersion: mcm.ibm.com/v1alpha1
+kind: PlacementPolicy
+metadata:
+  name: placement-mcm-hub-components-must-be-deployed
+  namespace: kube-system
+spec:
+  clusterLabels:
+    matchExpressions:
+      - {key: hub-cluster, operator: In, values: ["true"]}
