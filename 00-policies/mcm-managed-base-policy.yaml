@@ -25,26 +25,6 @@ spec:
           certmanager.k8s.io/disable-validation: "true"
     - complianceType: musthave
       objectDefinition:
-        kind: Secret 
-        apiVersion: v1
-        metadata:
-          name: mcm-dockercfg
-          namespace: mcm-cert-manager
-        data:
-          .dockerconfigjson: <<<< INSERT BASE64 PAYLOAD HERE >>>>>
-        type: kubernetes.io/dockerconfigjson
-    - complianceType: musthave
-      objectDefinition:
-        kind: Secret 
-        apiVersion: v1
-        metadata:
-          name: mcm-dockercfg
-          namespace: kube-system
-        data:
-          .dockerconfigjson: <<<< INSERT BASE64 PAYLOAD HERE >>>>>
-        type: kubernetes.io/dockerconfigjson
-    - complianceType: musthave
-      objectDefinition:
         kind: SecurityContextConstraints
         apiVersion: security.openshift.io/v1
         metadata:

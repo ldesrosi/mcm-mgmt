@@ -8,5 +8,4 @@ if [[ ! $REPLY =~ ^[Yy]$ ]]
 then
     exit 1
 fi
-kubectl patch clusterrole controller-role --type=merge -p '{"rules": [{"apiGroups": [ "policies.ibm.com"], "resources": ["CertificatePolicies","certificatepolicies"], "verbs": ["get", "list", "watch", "create", "update",  "patch", "delete"]}]}'
-kubectl patch clusterrole controller-role --type=merge -p '{"rules": [{"apiGroups": [ ""], "resources": ["namespaces"], "verbs": ["get", "list", "watch", "create", "update",  "patch", "delete"]}]}'
+kubectl apply -f controller-role.yaml

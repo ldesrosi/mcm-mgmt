@@ -15,20 +15,11 @@ The high-level steps are:
 ## Adjusting the scripts  
   
 At the moment you will need to manually adjust a few files before proceeding.
-
-1. Creating the base 64 dockerconfigjson
-   First run this command 
-   ```
-   oc create secret docker-registry mcm-dockercfg --docker-server=<<OCP IMAGE REGISTRY URL>>  --docker-username=$(oc whoami) --docker-password=$(oc whoami -t)
-   oc get secret mcm-dockercfg -o yaml
-   oc delete secret mcm-dockercfg
-   ```
-   from the output of the second command, copy the value of the field `.dockerconfigjson` to the `00-policies/mcm-managed-base-policy.yaml`. Note that we delete the secret as you don't need to keep it since it will be recreated by the policies.
   
-2.  Modifying 03-apps/00-channel.yaml
+1.  Modifying 03-apps/00-channel.yaml
     You will need to replace the `<<ICP CONSOLE URL>>` with the value of your ICP URL and then you will need to base64 encode your CP4MCM UserId and Password and replace the tokens `<<SOME BASE64 USER>>` and `<<SOME BASE64 PASSWORD>>`
 
-3. Modifying subscription files `02-cert-subscription.yaml` and `03-iam-subscription.yaml`
+2. Modifying subscription files `02-cert-subscription.yaml` and `03-iam-subscription.yaml`
     You will need to modify `<<YOUR IMAGE REGISTRY>>` with your OCP image registry route, omitting the `https://`.
 
 
@@ -53,7 +44,7 @@ Implication here is that you imported your MCM cluster as part of the list of ma
     With KUBECONFIG pointing to your **managed** cluster run:  
     
     ```
-    ./01-serviceaccount/patchAccount.sh
+    ./01-serviceaccount/patchAccount.sh  <<Image-registry URL including HTTPS>>
     ```
 
 3. Deploy the managed applications
@@ -64,6 +55,8 @@ Implication here is that you imported your MCM cluster as part of the list of ma
     ```
 
 4. Patch Cluster Roles
+    Before running the following commands, make sure that the helm charts have finished deploying. Both application should show as 1/1 in the App Management console of MCM.
+    
     With KUBECONFIG pointing to your **managed** cluster run:  
     
     ```
