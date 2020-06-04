@@ -32,6 +32,14 @@ At the moment you will need to manually adjust a few files before proceeding.
     You will need to modify `<<YOUR IMAGE REGISTRY>>` with your OCP image registry route, omitting the `https://`.
 
 
+## Setting the tags against the clusters  
+  
+From the menu `Automate Infrastructure -> Clusters`, modify your clusters label to add:
+Key: `managed-cluster` Value: `true` for managed cluster
+Key: `hub-cluster` Value: `true` for mcm cluster
+
+Implication here is that you imported your MCM cluster as part of the list of managed clusters.
+
 ## Commands to run
 
 1. Setup Policies  
