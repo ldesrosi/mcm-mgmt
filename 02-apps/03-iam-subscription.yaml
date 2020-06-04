@@ -17,7 +17,8 @@ spec:
     - path: spec.values
       value: |
         image:
-          repository: <<YOUR IMAGE REGISTRY>>/ibmcom/iam-policy-controller
+          repository: default-route-openshift-image-registry.mcm-cluster-701608-3a99165d2acc3a9ca65ba8c534430045-0000.us-south.containers.appdomain.cloud/ibmcom/iam-policy-controller
+        nodeSelector: null
   placement:
      placementRef:
       name: mcm-mgmt-placement-rule

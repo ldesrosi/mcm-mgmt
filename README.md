@@ -10,7 +10,6 @@ The high-level steps are:
 2. Create namespace, SCC and Secrets on the managed cluster.  
 3. Setup the service account on the managed cluster with the right privilege.  
 4. Deploy cert-manager and iam-controller as a managed application on MCM Hub Cluster.  
-5. Patch the ClusterRole to ensure cert-manager has the required access.  
 
 ## Adjusting the scripts  
   
@@ -40,25 +39,25 @@ Implication here is that you imported your MCM cluster as part of the list of ma
     oc apply -f 00-policies
     ```
 
-2. Patch Service Accounts
-    With KUBECONFIG pointing to your **managed** cluster run:  
-    
-    ```
-    ./01-serviceaccount/patchAccount.sh  <<Image-registry URL including HTTPS>>
-    ```
-
-3. Deploy the managed applications
+2. Generate Image Registry Secret file
     With KUBECONFIG pointing to your **hub** cluster run:  
     
     ```
-    oc apply -f 03-apps
+    cd 01-serviceaccount
+    ./generateSecret.sh  <<Image-registry URL including HTTPS>>
     ```
+    Should generate a file called image-pull-secret.yaml.  Edit and remove the unwanted fields.
 
-4. Patch Cluster Roles
-    Before running the following commands, make sure that the helm charts have finished deploying. Both application should show as 1/1 in the App Management console of MCM.
-    
-    With KUBECONFIG pointing to your **managed** cluster run:  
-    
+
+3. Upload the image secret to all your managed clusters
+    With KUBECONFIG pointing to your **managed** cluster run: 
     ```
-    ./04-clusterrole/patchClusterRole.sh
+    ./patchAccount.sh 
+    ```
+    
+4. Deploy the managed applications
+    With KUBECONFIG pointing to your **hub** cluster run:  
+    ```
+    cd ..
+    oc apply -f 02-apps
     ```

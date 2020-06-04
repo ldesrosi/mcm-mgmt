@@ -64,6 +64,68 @@ spec:
         - persistentVolumeClaim
         - projected
         - secret
+    - complianceType: musthave
+      objectDefinition:
+        apiVersion: rbac.authorization.k8s.io/v1
+        kind: ClusterRole
+        metadata:
+          annotations:
+          name: cert-policy-access
+        rules:
+        - apiGroups:
+          - policies.ibm.com
+          resources:
+          - certificatepolicies
+          verbs:
+          - create
+          - get
+          - update
+          - delete
+          - deletecollection
+          - patch
+          - use
+          - list
+          - watch
+        - apiGroups:
+          - ""
+          resources:
+          - namespaces
+          verbs:
+          - create
+          - get
+          - update
+          - delete
+          - deletecollection
+          - patch
+          - use
+          - list
+          - watch
+    - complianceType: musthave
+      objectDefinition:
+        kind: ClusterRoleBinding
+        metadata:
+          name: cert-manager-cert-policy-access
+        roleRef:
+          apiGroup: rbac.authorization.k8s.io
+          kind: ClusterRole
+          name: cert-policy-access
+        subjects:
+        - kind: ServiceAccount
+          name: default
+          namespace: mcm-cert-manager
+    - complianceType: musthave
+      objectDefinition:
+        kind: ClusterRoleBinding
+        metadata:
+          name: cert-manager-cert-policy-access
+        roleRef:
+          apiGroup: rbac.authorization.k8s.io
+          kind: ClusterRole
+          name: cert-policy-access
+        subjects:
+        - kind: ServiceAccount
+          name: default
+          namespace: kube-system
 ---
 apiVersion: mcm.ibm.com/v1alpha1
 kind: PlacementBinding

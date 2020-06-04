@@ -7,7 +7,7 @@ metadata:
     name: mcm-mgmt-placement-rule
     app: mcm-mgmt-app
 spec:
-  clusterReplicas: 1
+  clusterReplicas: 2
   clusterLabels:
     matchExpressions:
       - {key: managed-cluster, operator: In, values: ["true"]}
